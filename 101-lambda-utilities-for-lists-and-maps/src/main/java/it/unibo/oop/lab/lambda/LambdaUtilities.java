@@ -1,7 +1,9 @@
 package it.unibo.oop.lab.lambda;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,7 +63,9 @@ public final class LambdaUtilities {
         /*
          * Suggestion: consider Optional.filter
          */
-        return null;
+        final List<Optional<T>> optList = new ArrayList<>(list.size() + 1);
+        list.forEach(t -> optList.add(Optional.of(t).filter(pre)));
+        return optList;
     }
 
     /**
@@ -80,7 +84,14 @@ public final class LambdaUtilities {
         /*
          * Suggestion: consider Map.merge
          */
-        return null;
+        final Map<R, Set<T>> grouMap = new HashMap<>();
+        list.forEach(t -> {
+            grouMap.merge(op.apply(t), new HashSet<>(Collections.singleton(t)), (oldSet, newSet) -> {
+                oldSet.addAll(newSet);
+                return oldSet;
+            });
+        });
+        return grouMap;
     }
 
     /**
@@ -93,7 +104,7 @@ public final class LambdaUtilities {
      * @param <K>
      *            key type
      * @return a map whose non present values are filled with the value provided
-     *         by the supplier
+     *         by the supplier,
      */
     public static <K, V> Map<K, V> fill(final Map<K, Optional<V>> map, final Supplier<V> def) {
         /*
@@ -101,9 +112,12 @@ public final class LambdaUtilities {
          *
          * Keep in mind that a map can be iterated through its forEach method
          */
-        return null;
+        final Map<K, V> filledMap = new HashMap<>();
+        map.forEach((k, v) -> {
+            filledMap.put(k, v.orElse(def.get()));
+        });
+        return filledMap;
     }
-
     /**
      * @param args
      *            ignored
