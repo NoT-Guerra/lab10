@@ -1,22 +1,25 @@
 package it.unibo.mvc;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.JOptionPane;
 /**
+ * Main application for the DrawNumber game.
  */
 public final class DrawNumberApp implements DrawNumberViewObserver {
-    private static final int MIN = 0;
-    private static final int MAX = 100;
-    private static final int ATTEMPTS = 10;
 
     private final DrawNumber model;
     private final List<DrawNumberView> views;
 
     /**
-     * @param views
-     *            the views to attach
+     * Constructor for DrawNumberApp.
+     * @param views the views to attach
      */
     public DrawNumberApp(final DrawNumberView... views) {
         /*
@@ -27,7 +30,30 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
             view.setObserver(this);
             view.start();
         }
-        this.model = new DrawNumberImpl(MIN, MAX, ATTEMPTS);
+
+        // Initialize the model using configuration values
+        final Configuration.Builder builder = new Configuration.Builder();
+
+        try (InputStream input = DrawNumberApp.class.getResourceAsStream("/config.yml");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim(); // Remove leading and trailing whitespace
+                if (line.startsWith("minimum:")) {
+                    builder.setMin(Integer.parseInt(line.split(":")[1].trim()));
+                } else if (line.startsWith("maximum:")) {
+                    builder.setMax(Integer.parseInt(line.split(":")[1].trim()));
+                } else if (line.startsWith("attempts:")) {
+                    builder.setAttempts(Integer.parseInt(line.split(":")[1].trim()));
+                }
+            }
+        } catch (IOException e) {
+            displayError("Error reading configuration: " + e.getMessage());
+        }
+
+        // Create the model using the configured values
+        this.model = new DrawNumberImpl(builder.build());
     }
 
     @Override
@@ -61,12 +87,19 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
     }
 
     /**
-     * @param args
-     *            ignored
-     * @throws FileNotFoundException 
+     * Displays an error message using a JOptionPane.
+     * @param message the error message to display
+     */
+    public void displayError(String message) {
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    /**
+     * Main method to start the application.
+     * @param args ignored
+     * @throws FileNotFoundException if the configuration file is not found
      */
     public static void main(final String... args) throws FileNotFoundException {
         new DrawNumberApp(new DrawNumberViewImpl());
     }
-
 }
