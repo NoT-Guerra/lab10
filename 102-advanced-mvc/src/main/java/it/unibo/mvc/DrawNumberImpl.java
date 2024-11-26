@@ -21,7 +21,7 @@ public final class DrawNumberImpl implements DrawNumber {
      public DrawNumberImpl(final Configuration config) {
         this.min = config.getMin();
         this.max = config.getMax();
-        this.attempts = config.getAttempts(); // Corretto "=" al posto di "-"
+        this.attempts = config.getAttempts();
         this.reset();
     }
 

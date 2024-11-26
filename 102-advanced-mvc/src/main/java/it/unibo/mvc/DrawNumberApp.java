@@ -99,7 +99,18 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
      * @param args ignored
      * @throws FileNotFoundException if the configuration file is not found
      */
-    public static void main(final String... args) throws FileNotFoundException {
-        new DrawNumberApp(new DrawNumberViewImpl());
+    public static void main(final String... args) {
+        // Creazione di più viste
+        DrawNumberView view1 = new DrawNumberViewImpl(); // Prima vista
+        DrawNumberView view2 = new DrawNumberViewImpl(); // Seconda vista
+        DrawNumberView view3 = new DrawNumberViewImpl(); // Terza vista (aggiunta opzionale)
+
+        // Passaggio delle viste al costruttore dell'applicazione
+        @SuppressWarnings("unused")//used to run main class
+        DrawNumberApp app = new DrawNumberApp(view1, view2, view3);
+
+        // Le viste saranno gestite dal costruttore e attivate
     }
+
+
 }
